@@ -1,0 +1,27 @@
+name: PM AAA Workbook Handoff
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/pmaaa-workbook-handoff.yml'
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download verified workbook files
+        run: |
+          set -euo pipefail
+          mkdir -p output
+          curl -fL --retry 3 -o output/MLT_PM_AAA_Full_Application_Capability_Workbook_FINAL.pdf "https://filebin.net/14ycq5yi7u66tfjv/MLT_PM_AAA_Full_Application_Capability_Workbook_FINAL.pdf"
+          curl -fL --retry 3 -o output/MLT_PM_AAA_Full_Application_Capability_Workbook.docx "https://filebin.net/14ycq5yi7u66tfjv/MLT_PM_AAA_Full_Application_Capability_Workbook.docx"
+          sha256sum output/*
+      - name: Upload workbook artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MLT-PM-AAA-Full-Application-Capability-Workbook
+          path: output/*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
